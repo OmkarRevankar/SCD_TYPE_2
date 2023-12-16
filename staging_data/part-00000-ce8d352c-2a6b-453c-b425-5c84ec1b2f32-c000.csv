@@ -1,0 +1,17 @@
+CustomerID,SK_CUSTOMER_ID,Title,FirstName,LastName,CompanyName,EmailAddress,Phone,ZipCode,effective_date,expiration_date,current_flag
+11,11,Mr.,Omkar,Revankar,Nagaro,omkar.revankar@gmail.com,421-111-1019,666666,2023-12-16,2023-12-16,false
+14,13,Mr.,Sonu,Bhosale,Apple,Sonu.bhosale@gmail.com,111-111-0001,989144,2023-12-16,2023-12-16,false
+11,15,Mr.,Omkar,Revankar,Synechron,omkar.revankar@gmail.com,421-111-1019,666666,2023-12-16,9999-12-31,true
+14,16,Mr.,Sonu,Bhosale,Microsoft,Sonu.bhosale@gmail.com,111-111-0001,989144,2023-12-16,9999-12-31,true
+1,1,Mr.,Pritesh,Joshi,CloudCover,priteshjoshi@gmail.com,150-555-0127,431122,2023-12-16,9999-12-31,true
+5,5,Mr.,Vikas,Yadav,CloudCover,vikasyadav@gmail.com,440-555-0132,431131,2023-12-16,9999-12-31,true
+15,14,Mr.,Santosh,Revankar,Android,Santosh.revankar@gmail.com,666-666-6666,666666,2023-12-16,9999-12-31,true
+9,12,Ms.,Vasudha,Sathe,Wipro,vasudha.sathe@gmail.com,443-666-5555,234144,2023-12-16,9999-12-31,true
+8,8,Ms.,Sunidhi,Patil,Accenture,sunidhi.patil@gmail.com,443-666-7777,887744,2023-12-16,9999-12-31,true
+7,7,Ms.,Gauri,Kulkarni,TCS,gauri.kulkarni@gmail.com,444-666-0444,431178,2023-12-16,9999-12-31,true
+10,10,Mr.,Sachin,Bhosale,Nagaro,sachin.bhosale@gmail.com,333-666-0009,989144,2023-12-16,9999-12-31,true
+2,2,Mr.,Omkar,Joshi,Amazon,omkarjoshi@gmail.com,926-555-0159,431122,2023-12-16,2023-12-16,false
+3,3,Mr.,Shubham,Mule,Fassos,shubhammule@gmail.com,112-555-0159,431123,2023-12-16,2023-12-16,false
+4,4,Mr.,Kshitij,Jadhav,Wipro,kshitijjadahv@gmail.com,1(11)500 555-0132,431124,2023-12-16,2023-12-16,false
+9,9,Ms.,Vasudha,Sathe,google,vasudha.sathe@gmail.com,443-666-5555,234144,2023-12-16,2023-12-16,false
+6,6,Ms.,Pooja,Joshi,TCS,poojajoshi@gmail.com,443-666-0413,431144,2023-12-16,2023-12-16,false

@@ -1,0 +1,11 @@
+CustomerID,Title,FirstName,LastName,CompanyName,EmailAddress,Phone,ZipCode
+1,Mr.,Pritesh,Joshi,CloudCover,priteshjoshi@gmail.com,150-555-0127,431122
+2,Mr.,Omkar,Joshi,Amazon,omkarjoshi@gmail.com,926-555-0159,431122
+3,Mr.,Shubham,Mule,Fassos,shubhammule@gmail.com,112-555-0159,431123
+4,Mr.,Kshitij,Jadhav,Wipro,kshitijjadahv@gmail.com,1(11)500 555-0132,431124
+5,Mr.,Vikas,Yadav,CloudCover,vikasyadav@gmail.com,440-555-0132,431131
+6,Ms.,Pooja,Joshi,TCS,poojajoshi@gmail.com,443-666-0413,431144
+7,Ms.,Gauri,Kulkarni,TCS,gauri.kulkarni@gmail.com,444-666-0444,431178
+8,Ms.,Sunidhi,Patil,Accenture,sunidhi.patil@gmail.com,443-666-7777,887744
+9,Ms.,Vasudha,Sathe,google,vasudha.sathe@gmail.com,443-666-5555,234144
+10,Mr.,Sachin,Bhosale,Nagaro,sachin.bhosale@gmail.com,333-666-0009,989144
