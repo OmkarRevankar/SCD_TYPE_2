@@ -11,7 +11,7 @@ class scd_type2:
         self.get_spark = get_spark()
         self.config_pipeline = self.config_reader.get_config_pipeline()
         self.source_file_path = self.config_pipeline.get('CONFIG_DETAIL', 'SOURCE_PATH')
-        self.source_file_path_new_load = self.config_pipeline.get('CONFIG_DETAIL', 'SOURCE_PATH_NEW_LOAD')
+        #self.source_file_path_new_load = self.config_pipeline.get('CONFIG_DETAIL', 'SOURCE_PATH_NEW_LOAD')
         self.end_date = self.config_pipeline.get('CONFIG_DETAIL', 'EOW_DATE')
         self.dest_path = self.config_pipeline.get('CONFIG_DETAIL', 'DEST_PATH')
         self.history_path = self.config_pipeline.get('CONFIG_DETAIL', 'DEST_PATH')
@@ -26,17 +26,18 @@ class scd_type2:
         self.spark_session = self.get_spark.getSparkSession(sparkconfig)
         pass
 
-    def read_data_source(self,batch):
+    def read_data_source(self,batch,filename=''):
         if batch == 'first':
             df = self.spark_session.read.options(header=True, delimiter=',', inferSchema='True').csv(
-                self.source_file_path)
-            print("Display the Employee Details data coming first time::")
+                self.source_file_path+filename)
             window_spec = W.orderBy("customerid")
             df = df \
                 .withColumn("sk_customer_id", F.row_number().over(window_spec)) \
                 .withColumn("effective_date", F.date_format(current_date(), self.date_format)) \
                 .withColumn("expiration_date", F.date_format(F.lit(self.end_date), self.date_format)) \
                 .withColumn("current_flag", F.lit(True))
+            print("First time load:")
+            df.show()
             return df
         elif batch == 'hist':
             df = self.spark_session.read.options(header=True, delimiter=',', inferSchema='True') \
@@ -48,9 +49,9 @@ class scd_type2:
             return df
         else:
             df = self.spark_session.read.options(header=True, delimiter=',', inferSchema='True') \
-            .csv(self.source_file_path_new_load)
-            #print("Current Incoming Load:: customerId 6 is deleted ,customerId 11 is added and customer 9 company is changed from google to wipro")
-            #df.show(100)
+            .csv(self.source_file_path+filename)
+            print("Current Incoming Load:")
+            df.show(100)
             return df
 
     def write_data_target(self,df):
@@ -58,6 +59,7 @@ class scd_type2:
             .option("header", True) \
             .option("delimiter", ",") \
             .csv(self.stg_path)
+        print("Writing results:")
         df.show()
         self.spark_session.read.options(header=True, delimiter=',', inferSchema='True').csv(self.stg_path).coalesce(1).write.mode('overwrite') \
             .option("header", True) \
@@ -96,12 +98,12 @@ class scd_type2:
             new_column_names = list(map(lambda x: x.replace(suffix, ""), df.columns))
         return df.toDF(*new_column_names)
 
-    def scd_type2_implementation(self,batch):
+    def scd_type2_implementation(self,batch,filename):
         if batch == "first":
-            employee_detail_first_load = self.read_data_source('first')
+            employee_detail_first_load = self.read_data_source('first',filename)
             return self.write_data_target(employee_detail_first_load)
         else:
-            employee_detail_incoming = self.read_data_source('incoming')
+            employee_detail_incoming = self.read_data_source('incoming',filename)
             employee_detail_hist = self.read_data_source('hist')
             """
                 We are segregating the history data on basis of open and closed records.
@@ -125,7 +127,6 @@ class scd_type2:
                 .withColumn("Action",F.when(F.col("hash_md5_history") == F.col("hash_md5_current"),F.lit("NoChange")) \
                             .when(F.col("customerid_current").isNull(),F.lit("Delete")).when(F.col("customerid_history").isNull(),F.lit("Insert")) \
                             .otherwise(F.lit("Update")))
-            result.show(100)
 
             df_nochange = self.column_renamer(result.where(F.col("action") == 'NoChange'),"_history",False)
             """
@@ -140,12 +141,15 @@ class scd_type2:
                 .withColumn("expiration_date",F.date_format(F.lit(self.end_date),self.date_format)) \
                 .withColumn("current_flag",F.lit(True)).withColumn("rw",F.row_number().over(winspec)) \
                 .withColumn("sk_customer_id",F.col('rw') + max_sk)
+            print("Records to be added:")
             df_insert.show(100)
 
             df_delete = self.column_renamer(result.where(F.col("action")=='Delete'),"_history",False) \
             .select(employee_detail_hist.columns).withColumn("expiration_date",F.date_format(current_date(),self.date_format)) \
                 .withColumn("current_flag",F.lit(False))
+            print("Records to be deleted:")
             df_delete.show(100)
+
             max_sk_insert = df_insert.agg({"sk_customer_id": "max"}).collect()[0][0]
             max_sk_hist = employee_detail_hist.agg({"sk_customer_id": "max"}).collect()[0][0]
             max_sk = max_sk_insert if (0 if max_sk_insert == None else max_sk_insert) > (0 if max_sk_hist == None else max_sk_hist) else max_sk_hist
@@ -160,12 +164,11 @@ class scd_type2:
                     .withColumn("rw",F.row_number().over(winspec))
                     .withColumn("sk_customer_id",F.col('rw')+max_sk).drop("rw")
             )
+            print("Records to be updated:")
             df_update.show()
 
             final_df = df_insert.select(eval(self.sel_col)).unionByName(df_update.select(eval(self.sel_col))) \
             .unionByName(df_nochange.select(eval(self.sel_col))).unionByName(df_delete.select(eval(self.sel_col))) \
             .unionByName(employee_detail_hist_closed.select(eval(self.sel_col)))
-
-            final_df.show()
             return self.write_data_target(final_df)
         return 0
